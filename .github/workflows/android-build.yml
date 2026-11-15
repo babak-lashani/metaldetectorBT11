@@ -35,7 +35,24 @@ jobs:
 
       - name: Extract project
         run: unzip -q MetalDetectorBT11.zip -d extracted
+        
 
+      - name: Fix repository configuration
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("extracted/MetalDetectorBT/build.gradle")
+          s = p.read_text()
+          s = s.replace("""allprojects {
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+          }
+          """, "")
+          p.write_text(s)
+          PY
+          
       - name: Build APK
         run: gradle -p extracted/MetalDetectorBT assembleDebug
 
